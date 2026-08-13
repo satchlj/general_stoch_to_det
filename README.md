@@ -75,47 +75,59 @@ deterministic witness without paying for the size of any alphabet.
 
 The formal proof has five conceptual steps.
 
-1. **Choose an optimal soft witness.** Finite-dimensional envelope arguments
-   give a finite stochastic auxiliary $C$ with $S(C)=\tau_n(p)$.
+### 1. Choose an optimal soft witness
 
-2. **Resample its posterior.** Given $X$, draw two independent copies
-   $C_0,C_1$ from the posterior law of $C$. Define the replica defect
+Finite-dimensional envelope arguments give a finite stochastic auxiliary $C$
+with $S(C)=\tau_n(p)$.
 
-   $$
-   D=I(C_1;X\mid C_0).
-   $$
+### 2. Resample its posterior
 
-   Optimality of $C$, together with a multivariate Shannon inequality, gives
+Given $X$, draw two independent copies $C_0,C_1$ from the posterior law of
+$C$. Define the replica defect
 
-   $$
-   D\le n(n-2)S(C).
-   $$
+$$
+D=I(C_1;X\mid C_0).
+$$
 
-3. **Use the certified two-variable theorem.** Apply the bound
-   $T\le517\tau$ to the pair $(X,C_0)$ with stochastic auxiliary $C_1$.
-   The relevant two-variable stochastic score is exactly $2D$.
+Optimality of $C$, together with a multivariate Shannon inequality, gives
 
-4. **Remove the posterior randomness.** Represent $C_0$ as a function of $X$
-   and an independent finite random table. Averaging and then fixing one table
-   produces a genuine hard code $\Gamma(X)$ satisfying
+$$
+D\le n(n-2)S(C).
+$$
 
-   $$
-   I(C;X\mid\Gamma)+H(\Gamma\mid C)
-   \le (2\cdot517+2)D
-   =1036D.
-   $$
+### 3. Use the certified two-variable theorem
 
-5. **Harden the multivariate score.** A direct entropy ledger proves
+Apply the bound $T\le517\tau$ to the pair $(X,C_0)$ with stochastic auxiliary
+$C_1$. The relevant two-variable stochastic score is exactly $2D$.
 
-   $$
-   S(\Gamma)
-   \le
-   S(C)+(n+1)
-   \bigl(I(C;X\mid\Gamma)+H(\Gamma\mid C)\bigr).
-   $$
+### 4. Remove the posterior randomness
 
-   Substituting the two preceding bounds and $S(C)=\tau_n(p)$ gives the stated
-   coefficient.
+Represent $C_0$ as a function of $X$ and an independent finite random table.
+Averaging and then fixing one table produces a genuine hard code $\Gamma(X)$
+satisfying
+
+$$
+\begin{aligned}
+I(C;X\mid\Gamma)+H(\Gamma\mid C)
+&\le (2\cdot517+2)D \\
+&=1036D.
+\end{aligned}
+$$
+
+### 5. Harden the multivariate score
+
+A direct entropy ledger proves
+
+$$
+\begin{aligned}
+S(\Gamma)
+&\le S(C) \\
+&\quad +(n+1)\bigl(I(C;X\mid\Gamma)+H(\Gamma\mid C)\bigr).
+\end{aligned}
+$$
+
+Substituting the two preceding bounds and $S(C)=\tau_n(p)$ gives the stated
+coefficient.
 
 ## Machine-checked statement
 
