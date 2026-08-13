@@ -21,7 +21,7 @@ stochastic auxiliary variable $V$ has score
 $$
 \begin{aligned}
 S(V)
-&= \operatorname{TC}(X\mid V) \\
+&= \mathrm{TC}(X\mid V) \\
 &\quad + \sum_{i=1}^n I(V;X_i\mid X_{-i}),
 \end{aligned}
 $$
@@ -29,7 +29,7 @@ $$
 where $X_{-i}$ means all coordinates except $X_i$, and
 
 $$
-\operatorname{TC}(X\mid V)
+\mathrm{TC}(X\mid V)
 = \sum_{i=1}^n H(X_i\mid V)-H(X\mid V)
 $$
 
