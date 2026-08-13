@@ -19,9 +19,11 @@ take values in $A^n$, where $A$ is any finite alphabet and $n \ge 3$. A
 stochastic auxiliary variable $V$ has score
 
 $$
+\begin{aligned}
 S(V)
-= \operatorname{TC}(X\mid V)
-+ \sum_{i=1}^n I(V;X_i\mid X_{-i}),
+&= \operatorname{TC}(X\mid V) \\
+&\quad + \sum_{i=1}^n I(V;X_i\mid X_{-i}),
+\end{aligned}
 $$
 
 where $X_{-i}$ means all coordinates except $X_i$, and
@@ -43,18 +45,14 @@ There are two optimization problems:
 The main theorem is
 
 $$
-\boxed{
-T_n(p)
-\le
-\bigl(1+1036(n+1)n(n-2)\bigr)\,\tau_n(p)
-}
+\boxed{T_n(p)\le\bigl(1+1036(n+1)n(n-2)\bigr)\cdot\tau_n(p)}
 \qquad(n\ge3).
 $$
 
 In particular,
 
 $$
-T_3(p)\le 12433\,\tau_3(p).
+T_3(p)\le 12433\cdot\tau_3(p).
 $$
 
 The constant is uniform over the alphabet $A$, the distribution $p$, and the
