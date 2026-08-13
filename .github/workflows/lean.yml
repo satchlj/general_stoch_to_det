@@ -1,0 +1,21 @@
+name: Lean verification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Lean and build
+        uses: leanprover/lean-action@v1
+      - name: Audit public theorems
+        run: ./verify.sh

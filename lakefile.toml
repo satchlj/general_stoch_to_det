@@ -1,0 +1,17 @@
+name = "general_stoch_to_det"
+version = "0.1.0"
+keywords = ["math", "information-theory", "lean"]
+defaultTargets = ["stoch_to_det"]
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.33.0-rc2"
+
+[leanOptions]
+pp.unicode.fun = true
+relaxedAutoImplicit = false
+maxSynthPendingDepth = 3
+
+[[lean_lib]]
+name = "stoch_to_det"
