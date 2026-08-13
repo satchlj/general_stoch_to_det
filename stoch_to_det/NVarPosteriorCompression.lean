@@ -1,5 +1,5 @@
 import stoch_to_det.NVarHardening
-import stoch_to_det.Final517
+import stoch_to_det.Ledger270
 
 /-!
 # One-sided posterior compression
@@ -629,7 +629,7 @@ theorem posteriorPairNLatent_joint (V : NLatent p) :
     V.push_posteriorPairJoint_source
 
 /-- Regard the preceding arbitrary-source latent as the ordinary two-variable
-latent required by `T_le_517`. -/
+latent required by `T_le_270`. -/
 noncomputable def posteriorPairLatent (V : NLatent p) :
     Latent V.posteriorPairLaw where
   ι := V.posteriorPairNLatent.ι
@@ -716,21 +716,21 @@ theorem posteriorPairLatent_score (V : NLatent p) :
   rw [hsecond, hthird]
   ring
 
-/-- The imported `517` theorem supplies the pair code at cost `1034 b`. -/
+/-- The imported `270` theorem supplies the pair code at cost `540 b`. -/
 theorem exists_posteriorPair_code (V : NLatent p) :
     exists phi : Omega × V.ι -> Fin (Fintype.card (Omega × V.ι)),
-      detScore V.posteriorPairLaw phi <= 1034 * V.replicaDefect := by
+      detScore V.posteriorPairLaw phi <= 540 * V.replicaDefect := by
   let hpPair := V.posteriorPairLaw_isPMF
   obtain ⟨phi, hphi⟩ := exists_T_optimal_code hpPair
   refine ⟨phi, ?_⟩
-  have h517 := T_le_517 hpPair
+  have h270 := T_le_270 hpPair
   have htau := tau_le_score V.posteriorPairLatent
   have hscore := V.posteriorPairLatent_score
   rw [← Latent.ofFunction_score_eq_detScore hpPair phi, hphi]
   calc
-    T V.posteriorPairLaw <= 517 * tau V.posteriorPairLaw := h517
-    _ <= 517 * V.posteriorPairLatent.score := by nlinarith
-    _ = 1034 * V.replicaDefect := by rw [hscore]; ring
+    T V.posteriorPairLaw <= 270 * tau V.posteriorPairLaw := h270
+    _ <= 270 * V.posteriorPairLatent.score := by nlinarith
+    _ = 540 * V.replicaDefect := by rw [hscore]; ring
 
 /-- A pair code supplied by the two-variable theorem already has small
 one-sided error when regarded as a stochastic code of `X`. -/
@@ -977,7 +977,7 @@ theorem exists_hardCode_oneSided (V : NLatent p) :
           (fun w => code w.2) V.joint +
         condH (fun w : V.ι × Omega => code w.2) (fun w => w.1)
           V.joint <=
-        1036 * V.replicaDefect := by
+        542 * V.replicaDefect := by
   obtain ⟨phi, hphi⟩ := V.exists_posteriorPair_code
   let err : V.TableSeed -> Real := fun e =>
     condMI (fun w : V.ι × Omega => w.1) (fun w => w.2)
@@ -995,7 +995,7 @@ theorem exists_hardCode_oneSided (V : NLatent p) :
     dsimp only [fixedPosteriorCode, seededPosteriorCode] at hseed ⊢
     exact hseed
   have havg_final : (∑ e, V.tableLaw e * err e) <=
-      1036 * V.replicaDefect := by
+      542 * V.replicaDefect := by
     nlinarith
   obtain ⟨e, he⟩ := FiniteInfo.exists_le_weighted_average
     V.tableLaw_isPMF err

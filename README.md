@@ -45,14 +45,14 @@ There are two optimization problems:
 The main theorem is
 
 $$
-\boxed{T_n(p)\le\bigl(1+1036(n+1)n(n-2)\bigr)\cdot\tau_n(p)}
+\boxed{T_n(p)\le\bigl(1+542(n+1)n(n-2)\bigr)\cdot\tau_n(p)}
 \qquad(n\ge3).
 $$
 
 In particular,
 
 $$
-T_3(p)\le 12433\cdot\tau_3(p).
+T_3(p)\le 6505\cdot\tau_3(p).
 $$
 
 The constant is uniform over the alphabet $A$, the distribution $p$, and the
@@ -97,7 +97,7 @@ $$
 
 ### 3. Use the certified two-variable theorem
 
-Apply the bound $T\le517\tau$ to the pair $(X,C_0)$ with stochastic auxiliary
+Apply the bound $T\le270\tau$ to the pair $(X,C_0)$ with stochastic auxiliary
 $C_1$. The relevant two-variable stochastic score is exactly $2D$.
 
 ### 4. Remove the posterior randomness
@@ -109,8 +109,8 @@ satisfying
 $$
 \begin{aligned}
 I(C;X\mid\Gamma)+H(\Gamma\mid C)
-&\le (2\cdot517+2)D \\
-&=1036D.
+&\le (2\cdot270+2)D \\
+&=542D.
 \end{aligned}
 $$
 
@@ -138,14 +138,14 @@ The public Lean declaration is
 theorem general_stoch_to_det (hp : IsPMF p) (hn : 3 <= n) :
     nT (fun i => coordinateView (alpha := alpha) i)
         (fun i => coordinateDeletionView (alpha := alpha) i) p <=
-      (1 + ((n : Real) + 1) * 1036 * (n : Real) * ((n : Real) - 2)) *
+      (1 + ((n : Real) + 1) * 542 * (n : Real) * ((n : Real) - 2)) *
         nTau (fun i => coordinateView (alpha := alpha) i)
           (fun i => coordinateDeletionView (alpha := alpha) i) p
 ```
 
 The specialization
 [`stoch_to_det.general_stoch_to_det_three`](stoch_to_det/MainTheorems.lean)
-states the $12433$ bound directly.
+states the $6505$ bound directly.
 
 ## Verify it
 
@@ -182,7 +182,8 @@ GitHub Actions runs the same verification on every push and pull request.
 | [`NVarReplicaBound.lean`](stoch_to_det/NVarReplicaBound.lean) | Alphabet-free replica-defect bound |
 | [`NVarPosteriorCompression.lean`](stoch_to_det/NVarPosteriorCompression.lean) | Two-variable compression, random-table representation, and seed fixing |
 | [`NVarHardening.lean`](stoch_to_det/NVarHardening.lean) | Converts one-sided approximation error into the hard score |
-| [`Final517.lean`](stoch_to_det/Final517.lean) | Certified two-variable bound $T\le517\tau$ |
+| [`Ledger270.lean`](stoch_to_det/Ledger270.lean) | Certified two-variable bound $T\le270\tau$ |
+| [`Verify270.lean`](Verify270.lean) | Dedicated audit of the 270 endpoint and its key intermediate lemmas |
 | [`Verify.lean`](Verify.lean) | Kernel-level public theorem audit |
 | [`verify.sh`](verify.sh) | One-command source, build, and axiom check |
 
@@ -193,8 +194,8 @@ files and abandoned proof routes are intentionally not included.
 
 This development builds on David Lorell's
 [`stoch_to_det`](https://github.com/DLorell/stoch_to_det) repository. The
-two-variable $517$ endpoint is from
-[PR #3](https://github.com/DLorell/stoch_to_det/pull/3). Module names in the
+two-variable $270$ endpoint is from
+[PR #4](https://github.com/DLorell/stoch_to_det/pull/4). Module names in the
 `stoch_to_det` namespace are preserved so the inherited definitions and proof
 chain remain easy to compare with upstream.
 

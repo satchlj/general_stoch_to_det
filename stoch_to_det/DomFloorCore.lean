@@ -149,8 +149,12 @@ private lemma joint_pos_marginals {q : α × β → ℝ} (hq : IsPMF q)
     exact Finset.single_le_sum (fun u _ => hq.nonneg u) (by simp)
   exact ⟨hz.trans_le hxle, hz.trans_le hyle⟩
 
-/-- The bulk/tail argument, parameterized by the scalar tail estimate. -/
-theorem contact_correlation_cap_of_tail
+/-- The bulk/tail argument, parameterized by the natural-information budget,
+the target correlation cap, the final two-term assembly, and the scalar tail
+estimate.  Keeping the assembly abstract lets later calibrations reuse the
+load-bearing bulk and quartic estimates without duplicating this proof. -/
+theorem contact_correlation_cap_of_tail_param
+    (K cap : ℝ)
     {S : Finset (α × β)} {w q : α × β → ℝ}
     (hq : IsPMF q) (hw : Feasible S w) (hcontact : IsContact S w q)
     {f : α → ℝ} {g : β → ℝ}
@@ -161,8 +165,11 @@ theorem contact_correlation_cap_of_tail
     (htail : ∀ r : ℝ, 2 ≤ r →
       (r - 1) ^ 4 ≤ ((5062 : ℝ) / 10000) *
         (r ^ 3 * (r * Real.log r - r + 1)))
-    (hK : Knat q ≤ (116 : ℝ) / 10000) :
-    (∑ z, q z * f z.1 * g z.2) ≤ (3565 : ℝ) / 10000 := by
+    (hassembly : ∀ x y : ℝ, 0 ≤ x → 0 ≤ y → x + y ≤ K →
+      Real.sqrt (((259 : ℝ) / 100) * x) +
+          (((5062 : ℝ) / 10000) * y) ^ ((1 : ℝ) / 4) ≤ cap)
+    (hK : Knat q ≤ K) :
+    (∑ z, q z * f z.1 * g z.2) ≤ cap := by
   classical
   let μ : α × β → ℝ := fun z => mX q z.1 * mY q z.2
   let k : α × β → ℝ := fun z => μ z *
@@ -221,7 +228,7 @@ theorem contact_correlation_cap_of_tail
   have hxyK : x + y = Knat q := by
     rw [← hpart k]
     simp [Knat, k, μ]
-  have hxy : x + y ≤ (116 : ℝ) / 10000 := by rw [hxyK]; exact hK
+  have hxy : x + y ≤ K := by rw [hxyK]; exact hK
 
   -- Bulk cells: the quadratic scalar bound and Cauchy--Schwarz.
   let A : α × β → ℝ := fun z => ((259 : ℝ) / 100) * k z
@@ -474,7 +481,7 @@ theorem contact_correlation_cap_of_tail
       (q z - μ z) * f z.1 * g z.2 ≤ |(q z - μ z) * f z.1 * g z.2| :=
         le_abs_self _
       _ = R z := by dsimp [R]; rw [abs_mul, abs_mul]
-  have hassembly := assembly_cap x y hx0 hy0 hxy
+  have hcap := hassembly x y hx0 hy0 hxy
   rw [hcorr, hpart (fun z => (q z - μ z) * f z.1 * g z.2)]
   calc
     (∑ z ∈ Bulk, (q z - μ z) * f z.1 * g z.2) +
@@ -484,7 +491,26 @@ theorem contact_correlation_cap_of_tail
     _ ≤ Real.sqrt (((259 : ℝ) / 100) * x) +
           (((5062 : ℝ) / 10000) * y) ^ ((1 : ℝ) / 4) :=
         add_le_add hbulk_abs htail_abs
-    _ ≤ (3565 : ℝ) / 10000 := hassembly
+    _ ≤ cap := hcap
+
+/-- The original `0.0116`/`0.3565` bulk-tail cap, retained as a compatibility
+wrapper around `contact_correlation_cap_of_tail_param`. -/
+theorem contact_correlation_cap_of_tail
+    {S : Finset (α × β)} {w q : α × β → ℝ}
+    (hq : IsPMF q) (hw : Feasible S w) (hcontact : IsContact S w q)
+    {f : α → ℝ} {g : β → ℝ}
+    (hf0 : ∑ x, mX q x * f x = 0)
+    (hg0 : ∑ y, mY q y * g y = 0)
+    (hf2 : ∑ x, mX q x * f x ^ 2 = 1)
+    (hg2 : ∑ y, mY q y * g y ^ 2 = 1)
+    (htail : ∀ r : ℝ, 2 ≤ r →
+      (r - 1) ^ 4 ≤ ((5062 : ℝ) / 10000) *
+        (r ^ 3 * (r * Real.log r - r + 1)))
+    (hK : Knat q ≤ (116 : ℝ) / 10000) :
+    (∑ z, q z * f z.1 * g z.2) ≤ (3565 : ℝ) / 10000 := by
+  exact contact_correlation_cap_of_tail_param
+    ((116 : ℝ) / 10000) ((3565 : ℝ) / 10000)
+    hq hw hcontact hf0 hg0 hf2 hg2 htail assembly_cap hK
 
 /-- Every centered, unit-variance witness has correlation below the calibrated
 cap whenever the natural mutual-information budget is at most `0.0116`. -/

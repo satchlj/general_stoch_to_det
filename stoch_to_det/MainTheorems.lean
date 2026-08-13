@@ -16,12 +16,12 @@ variable {p : (Fin n -> alpha) -> Real}
 
 /-- **General stochastic-to-deterministic bound.** For every finite law on
 `alpha^n` with `n >= 3`, the optimal hard score is at most
-`1 + 1036 * (n+1) * n * (n-2)` times the optimal stochastic score. The
+`1 + 542 * (n+1) * n * (n-2)` times the optimal stochastic score. The
 coefficient is independent of `alpha` and `p`. -/
 theorem general_stoch_to_det (hp : IsPMF p) (hn : 3 <= n) :
     nT (fun i => coordinateView (alpha := alpha) i)
         (fun i => coordinateDeletionView (alpha := alpha) i) p <=
-      (1 + ((n : Real) + 1) * 1036 * (n : Real) * ((n : Real) - 2)) *
+      (1 + ((n : Real) + 1) * 542 * (n : Real) * ((n : Real) - 2)) *
         nTau (fun i => coordinateView (alpha := alpha) i)
           (fun i => coordinateDeletionView (alpha := alpha) i) p :=
   NVarAlphabetFree.nT_le_alphabetFree hp hn
@@ -32,7 +32,7 @@ theorem general_stoch_to_det_three
     {p : (Fin 3 -> alpha) -> Real} (hp : IsPMF p) :
     nT (fun i => coordinateView (alpha := alpha) i)
         (fun i => coordinateDeletionView (alpha := alpha) i) p <=
-      12433 *
+      6505 *
         nTau (fun i => coordinateView (alpha := alpha) i)
           (fun i => coordinateDeletionView (alpha := alpha) i) p := by
   have h :=
