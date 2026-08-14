@@ -304,8 +304,9 @@ end NLatent
 
 /-- Explicit coefficient for the arbitrary-deletion sum theorem. -/
 noncomputable def deletionSumConstant (n m : Nat) : Real :=
-  1 + ((n : Real) + (Fintype.card (DeletionSet n m) : Real) + 1) * 542 *
-    (((n : Real) ^ 2 * ((n : Real) - 2)) + 1)
+  1 + ((n : Real) + (Fintype.card (DeletionSet n m) : Real) + 1) *
+    NVarTwoVariableInput.oneSidedFactor *
+      (((n : Real) ^ 2 * ((n : Real) - 2)) + 1)
 
 section DeletionEnvelope
 
@@ -1352,11 +1353,14 @@ theorem exists_hardCode_deletionSumScore_le
   have hdefect :=
     V.replicaDefect_le_deletionSumScore_of_optimal hn hm1 hmn hoptimal
   have hhard := V.ofFunction_deletionSumScore_le_score_add_error (m := m) hp code
-  have herr : err <= 542 * V.replicaDefect := by exact hcode
-  have herr' : err <= 542 *
+  have herr : err <=
+      NVarTwoVariableInput.oneSidedFactor * V.replicaDefect := by
+    exact hcode
+  have herr' : err <= NVarTwoVariableInput.oneSidedFactor *
       ((((n : Real) ^ 2 * ((n : Real) - 2)) + 1) *
         V.deletionSumScore (m := m)) := by
-    exact herr.trans (mul_le_mul_of_nonneg_left hdefect (by norm_num))
+    exact herr.trans (mul_le_mul_of_nonneg_left hdefect
+      NVarTwoVariableInput.oneSidedFactor_nonneg)
   have hfactor : 0 <=
       (n : Real) + (Fintype.card (DeletionSet n m) : Real) + 1 := by positivity
   have hhard' :
@@ -1368,7 +1372,8 @@ theorem exists_hardCode_deletionSumScore_le
         hhard
       _ <= V.deletionSumScore (m := m) +
           ((n : Real) + (Fintype.card (DeletionSet n m) : Real) + 1) *
-            (542 * ((((n : Real) ^ 2 * ((n : Real) - 2)) + 1) *
+            (NVarTwoVariableInput.oneSidedFactor *
+              ((((n : Real) ^ 2 * ((n : Real) - 2)) + 1) *
               V.deletionSumScore (m := m))) := by
         exact add_le_add_right (mul_le_mul_of_nonneg_left herr' hfactor) _
       _ = deletionSumConstant n m * V.deletionSumScore (m := m) := by
@@ -1425,8 +1430,9 @@ noncomputable def deletionMaxConstant (n m : Nat) : Real :=
 theorem deletionMaxConstant_eq_choose (n m : Nat) :
     deletionMaxConstant n m =
       (Nat.choose n m : Real) *
-        (1 + ((n : Real) + (Nat.choose n m : Real) + 1) * 542 *
-          (((n : Real) ^ 2 * ((n : Real) - 2)) + 1)) := by
+        (1 + ((n : Real) + (Nat.choose n m : Real) + 1) *
+          NVarTwoVariableInput.oneSidedFactor *
+            (((n : Real) ^ 2 * ((n : Real) - 2)) + 1)) := by
   simp [deletionMaxConstant, deletionSumConstant, card_deletionSet]
 
 namespace NLatent
@@ -1632,7 +1638,9 @@ theorem deletionMaxT_le_alphabetFree
   have hsumFactor : 0 <= deletionSumConstant n m := by
     unfold deletionSumConstant
     exact add_nonneg (by norm_num)
-      (mul_nonneg (mul_nonneg hfront (by norm_num)) hreplicaFactor)
+      (mul_nonneg
+        (mul_nonneg hfront NVarTwoVariableInput.oneSidedFactor_nonneg)
+        hreplicaFactor)
   have hfactor : 0 <= deletionMaxConstant n m := by
     unfold deletionMaxConstant
     exact mul_nonneg (by positivity) hsumFactor

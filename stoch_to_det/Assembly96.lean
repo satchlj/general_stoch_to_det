@@ -1,11 +1,11 @@
-import stoch_to_det.Assembly1336
-import stoch_to_det.Constants270
+import stoch_to_det.AssemblyBounds
+import stoch_to_det.Constants96
 
-/-! Two-tangent assembly at the `270` natural-information budget. -/
+/-! Exact two-tangent assembly at the information budget used by `T_le_96`. -/
 
 namespace stoch_to_det
 
-theorem assembly_cap_270 (x y : ℝ) (hx : 0 ≤ x) (hy : 0 ≤ y)
+theorem assembly_cap_96 (x y : ℝ) (hx : 0 ≤ x) (hy : 0 ≤ y)
     (hxy : x + y ≤ (231 : ℝ) / 10000) :
     Real.sqrt (((259 : ℝ) / 100) * x) +
         (((5062 : ℝ) / 10000) * y) ^ ((1 : ℝ) / 4) ≤
@@ -48,8 +48,8 @@ theorem assembly_cap_270 (x y : ℝ) (hx : 0 ≤ x) (hy : 0 ≤ y)
       norm_num at hxy ⊢
       nlinarith
 
-theorem assembly_cap_270_lt_rho : (4511 : ℝ) / 10000 < rho270 := by
-  rw [rho270_eq_value]
+theorem assembly_cap_96_lt_rho : (4511 : ℝ) / 10000 < rho96 := by
+  rw [rho96_eq_value]
   norm_num
 
 end stoch_to_det

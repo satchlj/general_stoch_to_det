@@ -1,5 +1,5 @@
 import stoch_to_det.NVarHardening
-import stoch_to_det.Ledger270
+import stoch_to_det.NVarTwoVariableInput
 
 /-!
 # One-sided posterior compression
@@ -629,7 +629,7 @@ theorem posteriorPairNLatent_joint (V : NLatent p) :
     V.push_posteriorPairJoint_source
 
 /-- Regard the preceding arbitrary-source latent as the ordinary two-variable
-latent required by `T_le_270`. -/
+latent required by the certified endpoint. -/
 noncomputable def posteriorPairLatent (V : NLatent p) :
     Latent V.posteriorPairLaw where
   ι := V.posteriorPairNLatent.ι
@@ -716,21 +716,30 @@ theorem posteriorPairLatent_score (V : NLatent p) :
   rw [hsecond, hthird]
   ring
 
-/-- The imported `270` theorem supplies the pair code at cost `540 b`. -/
+/-- The centralized two-variable theorem supplies the pair code at cost
+`2 * certifiedFactor * b`. -/
 theorem exists_posteriorPair_code (V : NLatent p) :
     exists phi : Omega × V.ι -> Fin (Fintype.card (Omega × V.ι)),
-      detScore V.posteriorPairLaw phi <= 540 * V.replicaDefect := by
+      detScore V.posteriorPairLaw phi <=
+        (2 * NVarTwoVariableInput.certifiedFactor) * V.replicaDefect := by
   let hpPair := V.posteriorPairLaw_isPMF
   obtain ⟨phi, hphi⟩ := exists_T_optimal_code hpPair
   refine ⟨phi, ?_⟩
-  have h270 := T_le_270 hpPair
+  have htwo := NVarTwoVariableInput.T_le_certifiedFactor hpPair
   have htau := tau_le_score V.posteriorPairLatent
   have hscore := V.posteriorPairLatent_score
   rw [← Latent.ofFunction_score_eq_detScore hpPair phi, hphi]
   calc
-    T V.posteriorPairLaw <= 270 * tau V.posteriorPairLaw := h270
-    _ <= 270 * V.posteriorPairLatent.score := by nlinarith
-    _ = 540 * V.replicaDefect := by rw [hscore]; ring
+    T V.posteriorPairLaw <=
+        NVarTwoVariableInput.certifiedFactor *
+          tau V.posteriorPairLaw := htwo
+    _ <= NVarTwoVariableInput.certifiedFactor *
+        V.posteriorPairLatent.score := by
+      exact mul_le_mul_of_nonneg_left htau (by
+        rw [NVarTwoVariableInput.certifiedFactor_eq]
+        norm_num)
+    _ = (2 * NVarTwoVariableInput.certifiedFactor) *
+        V.replicaDefect := by rw [hscore]; ring
 
 /-- A pair code supplied by the two-variable theorem already has small
 one-sided error when regarded as a stochastic code of `X`. -/
@@ -977,7 +986,7 @@ theorem exists_hardCode_oneSided (V : NLatent p) :
           (fun w => code w.2) V.joint +
         condH (fun w : V.ι × Omega => code w.2) (fun w => w.1)
           V.joint <=
-        542 * V.replicaDefect := by
+        NVarTwoVariableInput.oneSidedFactor * V.replicaDefect := by
   obtain ⟨phi, hphi⟩ := V.exists_posteriorPair_code
   let err : V.TableSeed -> Real := fun e =>
     condMI (fun w : V.ι × Omega => w.1) (fun w => w.2)
@@ -995,8 +1004,15 @@ theorem exists_hardCode_oneSided (V : NLatent p) :
     dsimp only [fixedPosteriorCode, seededPosteriorCode] at hseed ⊢
     exact hseed
   have havg_final : (∑ e, V.tableLaw e * err e) <=
-      542 * V.replicaDefect := by
-    nlinarith
+      NVarTwoVariableInput.oneSidedFactor * V.replicaDefect := by
+    calc
+      _ <= detScore V.posteriorPairLaw phi +
+          2 * V.replicaDefect := havg_le
+      _ <= (2 * NVarTwoVariableInput.certifiedFactor) * V.replicaDefect +
+          2 * V.replicaDefect := add_le_add hphi (le_refl _)
+      _ = NVarTwoVariableInput.oneSidedFactor * V.replicaDefect := by
+        unfold NVarTwoVariableInput.oneSidedFactor
+        ring
   obtain ⟨e, he⟩ := FiniteInfo.exists_le_weighted_average
     V.tableLaw_isPMF err
   refine ⟨V.fixedPosteriorCode phi e, ?_⟩

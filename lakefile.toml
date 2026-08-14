@@ -1,5 +1,5 @@
 name = "general_stoch_to_det"
-version = "0.2.0"
+version = "0.3.0"
 keywords = ["math", "information-theory", "lean"]
 defaultTargets = ["stoch_to_det"]
 

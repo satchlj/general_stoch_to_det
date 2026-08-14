@@ -1,4 +1,3 @@
-import stoch_to_det.Assembly1336
 import stoch_to_det.PhiBounds2
 import stoch_to_det.QuarticMoment
 
@@ -492,39 +491,5 @@ theorem contact_correlation_cap_of_tail_param
           (((5062 : ℝ) / 10000) * y) ^ ((1 : ℝ) / 4) :=
         add_le_add hbulk_abs htail_abs
     _ ≤ cap := hcap
-
-/-- The original `0.0116`/`0.3565` bulk-tail cap, retained as a compatibility
-wrapper around `contact_correlation_cap_of_tail_param`. -/
-theorem contact_correlation_cap_of_tail
-    {S : Finset (α × β)} {w q : α × β → ℝ}
-    (hq : IsPMF q) (hw : Feasible S w) (hcontact : IsContact S w q)
-    {f : α → ℝ} {g : β → ℝ}
-    (hf0 : ∑ x, mX q x * f x = 0)
-    (hg0 : ∑ y, mY q y * g y = 0)
-    (hf2 : ∑ x, mX q x * f x ^ 2 = 1)
-    (hg2 : ∑ y, mY q y * g y ^ 2 = 1)
-    (htail : ∀ r : ℝ, 2 ≤ r →
-      (r - 1) ^ 4 ≤ ((5062 : ℝ) / 10000) *
-        (r ^ 3 * (r * Real.log r - r + 1)))
-    (hK : Knat q ≤ (116 : ℝ) / 10000) :
-    (∑ z, q z * f z.1 * g z.2) ≤ (3565 : ℝ) / 10000 := by
-  exact contact_correlation_cap_of_tail_param
-    ((116 : ℝ) / 10000) ((3565 : ℝ) / 10000)
-    hq hw hcontact hf0 hg0 hf2 hg2 htail assembly_cap hK
-
-/-- Every centered, unit-variance witness has correlation below the calibrated
-cap whenever the natural mutual-information budget is at most `0.0116`. -/
-theorem contact_correlation_cap
-    {S : Finset (α × β)} {w q : α × β → ℝ}
-    (hq : IsPMF q) (hw : Feasible S w) (hcontact : IsContact S w q)
-    {f : α → ℝ} {g : β → ℝ}
-    (hf0 : ∑ x, mX q x * f x = 0)
-    (hg0 : ∑ y, mY q y * g y = 0)
-    (hf2 : ∑ x, mX q x * f x ^ 2 = 1)
-    (hg2 : ∑ y, mY q y * g y ^ 2 = 1)
-    (hK : Knat q ≤ (116 : ℝ) / 10000) :
-    (∑ z, q z * f z.1 * g z.2) ≤ (3565 : ℝ) / 10000 := by
-  exact contact_correlation_cap_of_tail hq hw hcontact hf0 hg0 hf2 hg2
-    tail_quartic_cell hK
 
 end stoch_to_det

@@ -151,13 +151,15 @@ variable {n : Nat} {alpha : Type} [Fintype alpha] [DecidableEq alpha]
   [Inhabited alpha]
 variable {p : (Fin n -> alpha) -> Real}
 
-/-- The certified alphabet-free stochastic-to-hard bound.  The numerical
-constant `542 = 2*270+2` comes from PR #4 and the one-sided bridge; every
-other factor is a polynomial in `n`. -/
+/-- The certified alphabet-free stochastic-to-hard bound.  The centralized
+`oneSidedFactor = 2 * certifiedFactor + 2` contains the complete dependence
+on the imported two-variable theorem; every other factor is polynomial in
+`n`. -/
 theorem nT_le_alphabetFree (hp : IsPMF p) (hn : 3 <= n) :
     nT (fun i => coordinateView (alpha := alpha) i)
         (fun i => coordinateDeletionView (alpha := alpha) i) p <=
-      (1 + ((n : Real) + 1) * 542 * (n : Real) * ((n : Real) - 2)) *
+      (1 + ((n : Real) + 1) * NVarTwoVariableInput.oneSidedFactor *
+          (n : Real) * ((n : Real) - 2)) *
         nTau (fun i => coordinateView (alpha := alpha) i)
           (fun i => coordinateDeletionView (alpha := alpha) i) p := by
   let f : forall i : Fin n, (Fin n -> alpha) -> alpha :=
@@ -179,14 +181,19 @@ theorem nT_le_alphabetFree (hp : IsPMF p) (hn : 3 <= n) :
         (fun w => code w.2) V.joint +
       condH (fun w : V.ι × (Fin n -> alpha) => code w.2)
         (fun w => w.1) V.joint
-  have herr : err <= 542 * V.replicaDefect := by exact hcode
+  have herr : err <=
+      NVarTwoVariableInput.oneSidedFactor * V.replicaDefect := by
+    exact hcode
   have hnR : (3 : Real) <= (n : Real) := by exact_mod_cast hn
   have hfactor : 0 <= (n : Real) + 1 := by linarith
   have herr' : err <=
-      542 * ((n : Real) * ((n : Real) - 2) * V.score f g) := by
-    exact herr.trans (mul_le_mul_of_nonneg_left hdefect (by norm_num))
+      NVarTwoVariableInput.oneSidedFactor *
+        ((n : Real) * ((n : Real) - 2) * V.score f g) := by
+    exact herr.trans (mul_le_mul_of_nonneg_left hdefect
+      NVarTwoVariableInput.oneSidedFactor_nonneg)
   have hhard' : hard.score f g <=
-      (1 + ((n : Real) + 1) * 542 * (n : Real) * ((n : Real) - 2)) *
+      (1 + ((n : Real) + 1) * NVarTwoVariableInput.oneSidedFactor *
+          (n : Real) * ((n : Real) - 2)) *
         V.score f g := by
     dsimp only [hard, f, g] at hhard ⊢
     dsimp only [err] at herr'
@@ -200,7 +207,8 @@ theorem nT_le_alphabetFree (hp : IsPMF p) (hn : 3 <= n) :
       _ <= V.score (fun i => coordinateView (alpha := alpha) i)
             (fun i => coordinateDeletionView (alpha := alpha) i) +
           ((n : Real) + 1) *
-            (542 * ((n : Real) * ((n : Real) - 2) *
+            (NVarTwoVariableInput.oneSidedFactor *
+              ((n : Real) * ((n : Real) - 2) *
               V.score (fun i => coordinateView (alpha := alpha) i)
                 (fun i => coordinateDeletionView (alpha := alpha) i))) := by
           dsimp only [err, f, g] at herr'
@@ -219,7 +227,8 @@ theorem nT_le_alphabetFree (hp : IsPMF p) (hn : 3 <= n) :
   rw [hrecode] at hT
   calc
     nT f g p <= hard.score f g := hT
-    _ <= (1 + ((n : Real) + 1) * 542 * (n : Real) * ((n : Real) - 2)) *
+    _ <= (1 + ((n : Real) + 1) * NVarTwoVariableInput.oneSidedFactor *
+          (n : Real) * ((n : Real) - 2)) *
         V.score f g := hhard'
     _ = _ := by rw [hoptimal]
 

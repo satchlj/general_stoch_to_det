@@ -29,8 +29,9 @@ theorem general_stoch_to_det_all_deletions {m : Nat}
     letI : Nonempty (DeletionSet n m) := deletionSet_nonempty (Nat.le_of_lt hmn)
     deletionMaxT (m := m) p <=
       (Nat.choose n m : Real) *
-        (1 + ((n : Real) + (Nat.choose n m : Real) + 1) * 542 *
-          (((n : Real) ^ 2 * ((n : Real) - 2)) + 1)) *
+        (1 + ((n : Real) + (Nat.choose n m : Real) + 1) *
+          NVarTwoVariableInput.oneSidedFactor *
+            (((n : Real) ^ 2 * ((n : Real) - 2)) + 1)) *
         deletionMaxTau (m := m) p := by
   letI : Nonempty (DeletionSet n m) :=
     deletionSet_nonempty (Nat.le_of_lt hmn)
@@ -39,12 +40,13 @@ theorem general_stoch_to_det_all_deletions {m : Nat}
 
 /-- **Coordinate-sum stochastic-to-deterministic bound.** For every finite law
 on `alpha^n` with `n >= 3`, the earlier coordinate-sum hard score is at most
-`1 + 542 * (n+1) * n * (n-2)` times the optimal stochastic score. The
-coefficient is independent of `alpha` and `p`. -/
+`1 + oneSidedFactor * (n+1) * n * (n-2)` times the optimal stochastic score.
+The coefficient is independent of `alpha` and `p`. -/
 theorem general_stoch_to_det (hp : IsPMF p) (hn : 3 <= n) :
     nT (fun i => coordinateView (alpha := alpha) i)
         (fun i => coordinateDeletionView (alpha := alpha) i) p <=
-      (1 + ((n : Real) + 1) * 542 * (n : Real) * ((n : Real) - 2)) *
+      (1 + ((n : Real) + 1) * NVarTwoVariableInput.oneSidedFactor *
+          (n : Real) * ((n : Real) - 2)) *
         nTau (fun i => coordinateView (alpha := alpha) i)
           (fun i => coordinateDeletionView (alpha := alpha) i) p :=
   NVarAlphabetFree.nT_le_alphabetFree hp hn
@@ -55,12 +57,13 @@ theorem general_stoch_to_det_three
     {p : (Fin 3 -> alpha) -> Real} (hp : IsPMF p) :
     nT (fun i => coordinateView (alpha := alpha) i)
         (fun i => coordinateDeletionView (alpha := alpha) i) p <=
-      6505 *
+      2329 *
         nTau (fun i => coordinateView (alpha := alpha) i)
           (fun i => coordinateDeletionView (alpha := alpha) i) p := by
   have h :=
     general_stoch_to_det (n := 3) hp (by norm_num : 3 <= (3 : Nat))
-  norm_num at h
+  norm_num [NVarTwoVariableInput.oneSidedFactor,
+    NVarTwoVariableInput.certifiedFactor] at h
   exact h
 
 end stoch_to_det

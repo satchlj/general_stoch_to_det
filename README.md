@@ -67,7 +67,7 @@ $$
 C(n,m)
 =\binom{n}{m}
 \left[
-1+542\left(n+\binom{n}{m}+1\right)
+1+194\left(n+\binom{n}{m}+1\right)
 \left(n^2(n-2)+1\right)
 \right].
 $$
@@ -107,8 +107,13 @@ The certified two-variable theorem and a finite random-table construction then
 produce a genuine hard code $\Gamma(X)$ with
 
 $$
-I(C;X\mid\Gamma)+H(\Gamma\mid C)\le542b.
+I(C;X\mid\Gamma)+H(\Gamma\mid C)\le194b.
 $$
+
+The number $194=2\cdot96+2$ is centralized in
+`NVarTwoVariableInput.oneSidedFactor`. The multivariate proof refers only to
+that definition, so a future two-variable improvement is isolated to the
+small adapter module rather than repeated throughout the proof.
 
 A general entropy ledger transfers this approximation into the summed hard
 score. Finally,
@@ -129,7 +134,8 @@ Its conclusion is
 ```lean
 deletionMaxT (m := m) p <=
   (Nat.choose n m : Real) *
-    (1 + ((n : Real) + (Nat.choose n m : Real) + 1) * 542 *
+    (1 + ((n : Real) + (Nat.choose n m : Real) + 1) *
+      NVarTwoVariableInput.oneSidedFactor *
       (((n : Real) ^ 2 * ((n : Real) - 2)) + 1)) *
     deletionMaxTau (m := m) p
 ```
@@ -176,9 +182,11 @@ GitHub Actions runs the same verification on every push and pull request.
 | [`MainTheorems.lean`](stoch_to_det/MainTheorems.lean) | Short, stable public theorem statements |
 | [`NVarAllDeletion.lean`](stoch_to_det/NVarAllDeletion.lean) | Arbitrary deletion sets, summed score, max score, and final all-deletion theorem |
 | [`NVarReplicaBound.lean`](stoch_to_det/NVarReplicaBound.lean) | Alphabet-free replica-defect inequality |
+| [`NVarTwoVariableInput.lean`](stoch_to_det/NVarTwoVariableInput.lean) | Single adapter for the certified two-variable factor and derived one-sided factor |
 | [`NVarPosteriorCompression.lean`](stoch_to_det/NVarPosteriorCompression.lean) | Two-variable compression, posterior sampling, and seed fixing |
 | [`NVarHardening.lean`](stoch_to_det/NVarHardening.lean) | Converts approximation errors into a deterministic hard score |
-| [`Ledger270.lean`](stoch_to_det/Ledger270.lean) | Certified two-variable bound used by posterior compression |
+| [`SharedRace.lean`](stoch_to_det/SharedRace.lean) | Certified `T <= 96 * tau` endpoint used by posterior compression |
+| [`Ledger96.lean`](stoch_to_det/Ledger96.lean) | Calibrated two-variable ledger beneath the shared-race endpoint |
 | [`VerifyAllDeletion.lean`](VerifyAllDeletion.lean) | Dedicated no-`sorry` and axiom audit for the all-deletion theorem |
 | [`Verify.lean`](Verify.lean) | Audit of the stable public declarations |
 | [`verify.sh`](verify.sh) | One-command source, build, and kernel audit |
@@ -190,7 +198,7 @@ Exploratory files and abandoned proof routes are intentionally not included.
 This development builds on David Lorell's
 [`stoch_to_det`](https://github.com/DLorell/stoch_to_det) repository. The
 two-variable endpoint used here comes from
-[PR #4](https://github.com/DLorell/stoch_to_det/pull/4).
+[PR #5](https://github.com/DLorell/stoch_to_det/pull/5).
 
 See [`NOTICE.md`](NOTICE.md) for exact revisions and checksums. The repository
 is licensed under Apache 2.0; see [`LICENSE`](LICENSE).
