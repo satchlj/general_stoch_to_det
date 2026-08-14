@@ -15,7 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Set up Lean and build
+      - name: Set up Lean and restore caches
         uses: leanprover/lean-action@v1
+        with:
+          build: false
+          use-mathlib-cache: true
+          use-github-cache: true
       - name: Audit public theorems
         run: ./verify.sh

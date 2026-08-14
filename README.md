@@ -2,150 +2,144 @@
 
 [![Lean verification](https://github.com/satchlj/general_stoch_to_det/actions/workflows/lean.yml/badge.svg)](https://github.com/satchlj/general_stoch_to_det/actions/workflows/lean.yml)
 
-A Lean 4 proof that, for every finite distribution on $n \ge 3$ variables,
-the best deterministic auxiliary variable is within an explicit factor of the
-best stochastic auxiliary variable. The factor depends on $n$, but **not** on
-the size of the alphabet.
+A Lean 4 proof that a good stochastic natural latent can be replaced by a
+deterministic natural latent, with an explicit loss depending only on the
+number of variables and the deletion budget—not on any alphabet size.
 
-## The result in one sentence
+## The theorem
 
-Let
-
-$$
-X=(X_1,\ldots,X_n) \sim p
-$$
-
-take values in $A^n$, where $A$ is any finite alphabet and $n \ge 3$. A
-stochastic auxiliary variable $V$ has score
+Fix a finite joint law for
 
 $$
-\begin{aligned}
-S(V)
-&= \mathrm{TC}(X\mid V) \\
-&\quad + \sum_{i=1}^n I(V;X_i\mid X_{-i}),
-\end{aligned}
+X=(X_1,\ldots,X_n), \qquad n\ge 3,
 $$
 
-where $X_{-i}$ means all coordinates except $X_i$, and
+and choose a deletion budget $1\le m\le n-1$. For a set $D$ of $m$ coordinates,
+$X_D$ denotes the deleted block and $X_{-D}$ the surviving coordinates.
+
+For any finite latent $W$, define its separation error by
 
 $$
-\mathrm{TC}(X\mid V)
-= \sum_{i=1}^n H(X_i\mid V)-H(X\mid V)
+\mathrm{TC}(X\mid W)
+=\sum_{i=1}^{n}H(X_i\mid W)-H(X\mid W).
 $$
 
-is conditional total correlation.
-
-There are two optimization problems:
-
-- $\tau_n(p)$ is the infimum of $S(V)$ over all finite stochastic auxiliaries
-  coupled to $X$.
-- $T_n(p)$ is the minimum of the same score over hard auxiliaries
-  $\Gamma=\Gamma(X)$—ordinary deterministic functions of the observed tuple.
-
-The main theorem is
+A stochastic latent $Y$ may be coupled to $X$ in any way. Its redundancy
+error is
 
 $$
-\boxed{T_n(p)\le\bigl(1+542(n+1)n(n-2)\bigr)\cdot\tau_n(p)}
-\qquad(n\ge3).
+r^m_{\mathrm{sto}}(Y)
+=\max_{\lvert D\rvert=m} I(Y;X_D\mid X_{-D}).
 $$
 
-In particular,
+A deterministic latent is a hard code $Z=\Gamma(X)$ with finite output
+alphabet. Its redundancy error is instead
 
 $$
-T_3(p)\le 6505\cdot\tau_3(p).
+r^m_{\mathrm{det}}(Z)
+=\max_{\lvert D\rvert=m} H(Z\mid X_{-D}).
 $$
 
-The constant is uniform over the alphabet $A$, the distribution $p$, and the
-alphabet of the stochastic auxiliary. The theorem is finite: $A$ and every
-auxiliary alphabet are finite.
+These are genuinely different objectives. Define
 
-## What this means
+$$
+\tau_m(p)
+=\inf_Y\left[\mathrm{TC}(X\mid Y)+r^m_{\mathrm{sto}}(Y)\right]
+$$
 
-The stochastic optimization may use a genuinely randomized $V$ given $X$.
-The deterministic optimization must choose one fixed summary $\Gamma(X)$.
-The theorem says that randomization cannot beat every deterministic summary
-by more than the displayed alphabet-independent factor.
+and
 
-The hard part is that the two sides optimize over different witness classes.
-It is not enough to compare a preselected $V$ with a preselected $\Gamma$; the
-proof must start from an optimal stochastic witness and manufacture a single
-deterministic witness without paying for the size of any alphabet.
+$$
+T_m(p)
+=\inf_{Z=\Gamma(X)}
+\left[\mathrm{TC}(X\mid Z)+r^m_{\mathrm{det}}(Z)\right].
+$$
+
+The certified theorem proves, simultaneously for every $1\le m\le n-1$,
+
+$$
+T_m(p)\le C(n,m)\tau_m(p),
+$$
+
+where
+
+$$
+C(n,m)
+=\binom{n}{m}
+\left[
+1+542\left(n+\binom{n}{m}+1\right)
+\left(n^2(n-2)+1\right)
+\right].
+$$
+
+The coefficient is intentionally coarse. Its important feature is that it is
+independent of the alphabet of $X$, the alphabet of $Y$, and the law $p$.
+
+## Meaning
+
+The stochastic optimization can randomize $Y$ after observing $X$. The
+deterministic optimization must choose one ordinary function $\Gamma(X)$.
+The theorem says that randomization cannot improve the combined natural-latent
+error by more than the displayed alphabet-free factor.
+
+The Lean definition of $T_m$ uses one fixed finite codomain large enough to
+encode every partition of the finite state space of $X$. A recoding argument
+shows that this loses no deterministic candidate: it is equivalent to ranging
+over all finite hard codes $\Gamma(X)$.
 
 ## Proof idea
 
-The formal proof has five conceptual steps.
+The proof first replaces each maximum by a sum over the
+$\binom{n}{m}$ deletion sets. This sum objective has a finite optimal
+stochastic latent $C$.
 
-### 1. Choose an optimal soft witness
-
-Finite-dimensional envelope arguments give a finite stochastic auxiliary $C$
-with $S(C)=\tau_n(p)$.
-
-### 2. Resample its posterior
-
-Given $X$, draw two independent copies $C_0,C_1$ from the posterior law of
-$C$. Define the replica defect
+Two independent posterior copies of $C$ given $X$ produce a replica defect
+$b$. Optimality of $C$, the previously certified all-$n$ replica inequality,
+and conditional-information monotonicity give
 
 $$
-D=I(C_1;X\mid C_0).
+b\le\left(n^2(n-2)+1\right)S_m(C),
 $$
 
-Optimality of $C$, together with a multivariate Shannon inequality, gives
+where $S_m$ is the summed stochastic score.
+
+The certified two-variable theorem and a finite random-table construction then
+produce a genuine hard code $\Gamma(X)$ with
 
 $$
-D\le n(n-2)S(C).
+I(C;X\mid\Gamma)+H(\Gamma\mid C)\le542b.
 $$
 
-### 3. Use the certified two-variable theorem
-
-Apply the bound $T\le270\tau$ to the pair $(X,C_0)$ with stochastic auxiliary
-$C_1$. The relevant two-variable stochastic score is exactly $2D$.
-
-### 4. Remove the posterior randomness
-
-Represent $C_0$ as a function of $X$ and an independent finite random table.
-Averaging and then fixing one table produces a genuine hard code $\Gamma(X)$
-satisfying
+A general entropy ledger transfers this approximation into the summed hard
+score. Finally,
 
 $$
-\begin{aligned}
-I(C;X\mid\Gamma)+H(\Gamma\mid C)
-&\le (2\cdot270+2)D \\
-&=542D.
-\end{aligned}
+\max_D a_D\le\sum_D a_D
+\le\binom{n}{m}\max_D a_D
 $$
 
-### 5. Harden the multivariate score
-
-A direct entropy ledger proves
-
-$$
-\begin{aligned}
-S(\Gamma)
-&\le S(C) \\
-&\quad +(n+1)\bigl(I(C;X\mid\Gamma)+H(\Gamma\mid C)\bigr).
-\end{aligned}
-$$
-
-Substituting the two preceding bounds and $S(C)=\tau_n(p)$ gives the stated
-coefficient.
+converts the summed theorem back to the requested max-redundancy objectives.
 
 ## Machine-checked statement
 
-The public Lean declaration is
-[`stoch_to_det.general_stoch_to_det`](stoch_to_det/MainTheorems.lean):
+The stable public declaration is
+[`stoch_to_det.general_stoch_to_det_all_deletions`](stoch_to_det/MainTheorems.lean).
+Its conclusion is
 
 ```lean
-theorem general_stoch_to_det (hp : IsPMF p) (hn : 3 <= n) :
-    nT (fun i => coordinateView (alpha := alpha) i)
-        (fun i => coordinateDeletionView (alpha := alpha) i) p <=
-      (1 + ((n : Real) + 1) * 542 * (n : Real) * ((n : Real) - 2)) *
-        nTau (fun i => coordinateView (alpha := alpha) i)
-          (fun i => coordinateDeletionView (alpha := alpha) i) p
+deletionMaxT (m := m) p <=
+  (Nat.choose n m : Real) *
+    (1 + ((n : Real) + (Nat.choose n m : Real) + 1) * 542 *
+      (((n : Real) ^ 2 * ((n : Real) - 2)) + 1)) *
+    deletionMaxTau (m := m) p
 ```
 
-The specialization
-[`stoch_to_det.general_stoch_to_det_three`](stoch_to_det/MainTheorems.lean)
-states the $6505$ bound directly.
+under the hypotheses `IsPMF p`, `3 <= n`, `1 <= m`, and `m < n`.
+
+The earlier coordinate-sum theorem remains available as
+[`stoch_to_det.general_stoch_to_det`](stoch_to_det/MainTheorems.lean) for
+backward compatibility. It is not used to identify the deterministic and
+stochastic redundancy errors above.
 
 ## Verify it
 
@@ -154,18 +148,20 @@ Install [Elan](https://github.com/leanprover/elan), then run:
 ```sh
 git clone https://github.com/satchlj/general_stoch_to_det.git
 cd general_stoch_to_det
+lake exe cache get
 ./verify.sh
 ```
 
-The first run may download the pinned Lean toolchain and Mathlib dependencies.
-The verifier:
+The Mathlib cache command avoids rebuilding upstream dependencies when a
+matching binary cache is available. The verifier then:
 
 1. rejects unfinished or disallowed Lean constructs;
-2. builds the complete library;
-3. checks transitively that the public declarations contain no `sorryAx`; and
-4. checks their complete axiom dependencies.
+2. builds the complete public library;
+3. checks the all-deletion theorem and its key intermediate lemmas with
+   `assert_no_sorry`; and
+4. checks the complete axiom dependencies of the public declarations.
 
-The expected axiom set is exactly Lean and Mathlib's standard
+The expected axiom set is exactly
 
 ```text
 [propext, Classical.choice, Quot.sound]
@@ -173,31 +169,28 @@ The expected axiom set is exactly Lean and Mathlib's standard
 
 GitHub Actions runs the same verification on every push and pull request.
 
-## Where the proof lives
+## Proof map
 
 | File | Role |
 | --- | --- |
-| [`MainTheorems.lean`](stoch_to_det/MainTheorems.lean) | Short public theorem statements |
-| [`NVarAlphabetFree.lean`](stoch_to_det/NVarAlphabetFree.lean) | Final all-$n$ assembly |
-| [`NVarReplicaBound.lean`](stoch_to_det/NVarReplicaBound.lean) | Alphabet-free replica-defect bound |
-| [`NVarPosteriorCompression.lean`](stoch_to_det/NVarPosteriorCompression.lean) | Two-variable compression, random-table representation, and seed fixing |
-| [`NVarHardening.lean`](stoch_to_det/NVarHardening.lean) | Converts one-sided approximation error into the hard score |
-| [`Ledger270.lean`](stoch_to_det/Ledger270.lean) | Certified two-variable bound $T\le270\tau$ |
-| [`Verify270.lean`](Verify270.lean) | Dedicated audit of the 270 endpoint and its key intermediate lemmas |
-| [`Verify.lean`](Verify.lean) | Kernel-level public theorem audit |
-| [`verify.sh`](verify.sh) | One-command source, build, and axiom check |
+| [`MainTheorems.lean`](stoch_to_det/MainTheorems.lean) | Short, stable public theorem statements |
+| [`NVarAllDeletion.lean`](stoch_to_det/NVarAllDeletion.lean) | Arbitrary deletion sets, summed score, max score, and final all-deletion theorem |
+| [`NVarReplicaBound.lean`](stoch_to_det/NVarReplicaBound.lean) | Alphabet-free replica-defect inequality |
+| [`NVarPosteriorCompression.lean`](stoch_to_det/NVarPosteriorCompression.lean) | Two-variable compression, posterior sampling, and seed fixing |
+| [`NVarHardening.lean`](stoch_to_det/NVarHardening.lean) | Converts approximation errors into a deterministic hard score |
+| [`Ledger270.lean`](stoch_to_det/Ledger270.lean) | Certified two-variable bound used by posterior compression |
+| [`VerifyAllDeletion.lean`](VerifyAllDeletion.lean) | Dedicated no-`sorry` and axiom audit for the all-deletion theorem |
+| [`Verify.lean`](Verify.lean) | Audit of the stable public declarations |
+| [`verify.sh`](verify.sh) | One-command source, build, and kernel audit |
 
-The other Lean files are the exact transitive proof dependencies. Exploratory
-files and abandoned proof routes are intentionally not included.
+Exploratory files and abandoned proof routes are intentionally not included.
 
 ## Provenance and license
 
 This development builds on David Lorell's
 [`stoch_to_det`](https://github.com/DLorell/stoch_to_det) repository. The
-two-variable $270$ endpoint is from
-[PR #4](https://github.com/DLorell/stoch_to_det/pull/4). Module names in the
-`stoch_to_det` namespace are preserved so the inherited definitions and proof
-chain remain easy to compare with upstream.
+two-variable endpoint used here comes from
+[PR #4](https://github.com/DLorell/stoch_to_det/pull/4).
 
 See [`NOTICE.md`](NOTICE.md) for exact revisions and checksums. The repository
 is licensed under Apache 2.0; see [`LICENSE`](LICENSE).

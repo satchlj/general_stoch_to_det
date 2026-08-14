@@ -9,7 +9,10 @@ layers:
    [pull request #4](https://github.com/DLorell/stoch_to_det/pull/4), head commit
    `f77c6ffac9208949e72bac0ac0e9567cdca3cc15`.
 2. The multivariate posterior-replica, hardening, posterior-compression, and
-   final alphabet-independent assembly modules whose public endpoint is
+   alphabet-independent assembly modules. Their max-redundancy natural-latent
+   endpoint for every deletion budget is
+   `stoch_to_det.general_stoch_to_det_all_deletions`; the earlier
+   coordinate-sum endpoint remains available as
    `stoch_to_det.general_stoch_to_det`.
 
 For auditability, the imported `stoch_to_det/Ledger270.lean` has SHA-256 digest
